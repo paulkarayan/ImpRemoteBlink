@@ -1,0 +1,29 @@
+// declare local var
+
+local analogOutput = OutputPort("temperature", "number");
+
+
+
+
+function changeState()
+//{
+//local pinState = hardware.pin5.read();
+//if (pinState)
+{
+local sensorValue = hardware.pin1.read();
+server.show(sensorValue);
+server.log(sensorValue);
+analogOutput.set(sensorValue);
+imp.wakeup(0.2, changeState); 
+
+}
+//}
+//hardware.pin1.configure(DIGITAL_IN_PULLUP, changeState);
+hardware.pin1.configure(ANALOG_IN);
+
+
+// Register with the server
+imp.configure("spit out analog shite", [], [analogOutput]);
+
+
+changeState();
