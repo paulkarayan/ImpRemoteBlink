@@ -1,0 +1,56 @@
+// declare local var
+
+local analogInput = InputPort("temperature", "number");
+ledState <- 0
+wakeup <- 0.5
+inhibit <- 0
+
+class remLED extends InputPort
+{
+ 
+    type = "number"
+    name = "value"
+ 
+    function set(value) {
+        //hardware.pin8.write(value);
+        if (value == 0) {
+            inhibit = 1;
+            wakeup = 0.1;
+        }
+        else {
+            wakeup = ( 2 + ((value - 65535.0) / (65535.0)) * 1.9);
+             // wakeup = 1;
+    //leftSpan = leftMax - leftMin    65535 - 0
+    //rightSpan = rightMax - rightMin   0.1 - 2  
+
+    //Convert the left range into a 0-1 range (float)
+    
+        }
+        server.log(value);
+        server.log(wakeup);
+    }
+}
+
+function changeState()
+//{
+//local pinState = hardware.pin5.read();
+//if (pinState)
+{
+ledState = ledState?0:1;
+hardware.pin9.write(ledState);
+hardware.pin5.write(ledState);
+
+imp.wakeup(wakeup, changeState);
+
+
+}
+//}
+//hardware.pin1.configure(DIGITAL_IN_PULLUP, changeState);
+hardware.pin9.configure(DIGITAL_OUT_OD_PULLUP);
+hardware.pin5.configure(DIGITAL_OUT_OD_PULLUP);
+
+// Register with the server
+imp.configure("ingest analog shite", [remLED()], []);
+
+
+changeState();
